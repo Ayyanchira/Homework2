@@ -12,14 +12,16 @@ import SDWebImage
 
 class MyListTableViewController: UITableViewController {
 
-    
-    var productArray:NSMutableArray?
+    var productInventory:NSMutableArray?
+    var listOfBooks:NSMutableArray?
+    var listOfApplication:NSMutableArray?
     
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        productArray = NSMutableArray()
-        
+        listOfBooks = NSMutableArray()
+        listOfApplication = NSMutableArray()
+        productInventory = NSMutableArray()
 //        tableView.estimatedRowHeight = 50
 //        tableView.rowHeight = UITableViewAutomaticDimension
         
@@ -116,10 +118,16 @@ class MyListTableViewController: UITableViewController {
                     
                     
                     let product = Product(category: category, price: price!, title: title, author: author, releaseDate: releaseDate, thumbnailURL: thubnailURL!, otherImageURL: otherImageURL, productDescription: description)
+                    if category == "Applications"{
+                        self.listOfApplication?.add(product)
+                    }
+                    else if category == "Books"{
+                        self.listOfBooks?.add(product)
+                    }
                     
-                    self.productArray?.add(product)
                 }
-                
+                self.productInventory?.add(self.listOfBooks!)
+                self.productInventory?.add(self.listOfApplication!)
                 self.tableView.reloadData()
         }
     }
@@ -127,22 +135,31 @@ class MyListTableViewController: UITableViewController {
     // MARK: - Table view data source
 
     @IBAction func reloadButtonPressed(_ sender: UIBarButtonItem) {
-        productArray?.removeAllObjects()
+        listOfBooks?.removeAllObjects()
+        listOfApplication?.removeAllObjects()
+        productInventory?.removeAllObjects()
         fetchData()
     }
     override func numberOfSections(in tableView: UITableView) -> Int {
         // #warning Incomplete implementation, return the number of sections
-        return 1
+        return (productInventory?.count)!
     }
 
+    override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        let productArray = productInventory![section] as! NSMutableArray
+        let product = productArray[0] as! Product
+        return product.category
+    }
+    
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        // #warning Incomplete implementation, return the number of rows
-        return (productArray?.count)!
+        return (productInventory![section] as! NSMutableArray).count
     }
-
+    
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        
         let cell = tableView.dequeueReusableCell(withIdentifier: "customCell", for: indexPath) as! MyCustomTableViewCell
-        let product = productArray![indexPath.row] as! Product
+        let productArray = productInventory![indexPath.section] as! NSMutableArray
+        let product = productArray[indexPath.row] as! Product
         cell.authorLabel.text = product.author
         cell.titleLabel.text = product.title
         cell.thumbnailImageView.sd_setImage(with: product.thumbnailURL, completed: nil)
