@@ -15,6 +15,7 @@ class MyListTableViewController: UITableViewController {
     var productInventory:NSMutableArray?
     var listOfBooks:NSMutableArray?
     var listOfApplication:NSMutableArray?
+    var dictionaryOfInventory:NSMutableDictionary?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -22,6 +23,7 @@ class MyListTableViewController: UITableViewController {
         listOfBooks = NSMutableArray()
         listOfApplication = NSMutableArray()
         productInventory = NSMutableArray()
+        dictionaryOfInventory = NSMutableDictionary()
 //        tableView.estimatedRowHeight = 50
 //        tableView.rowHeight = UITableViewAutomaticDimension
         
@@ -118,12 +120,25 @@ class MyListTableViewController: UITableViewController {
                     
                     
                     let product = Product(category: category, price: price!, title: title, author: author, releaseDate: releaseDate, thumbnailURL: thubnailURL!, otherImageURL: otherImageURL, productDescription: description)
-                    if category == "Applications"{
-                        self.listOfApplication?.add(product)
+                    
+                   
+                    
+                    let keys:[String] = self.dictionaryOfInventory?.allKeys as! [String]
+                    if keys.contains(product.category){
+                        let productList = self.dictionaryOfInventory![product.category] as! NSMutableArray
+                        productList.add(product)
+                    }else{
+                        let newProductList = NSMutableArray()
+                        newProductList.add(product)
+                        self.dictionaryOfInventory?.setObject(newProductList, forKey: product.category as NSCopying)
                     }
-                    else if category == "Books"{
-                        self.listOfBooks?.add(product)
-                    }
+                    
+//                    if category == "Applications"{
+//                        self.listOfApplication?.add(product)
+//                    }
+//                    else if category == "Books"{
+//                        self.listOfBooks?.add(product)
+//                    }
                     
                 }
                 self.productInventory?.add(self.listOfBooks!)
