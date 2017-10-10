@@ -22,8 +22,6 @@ class MyListTableViewController: UITableViewController {
         listOfBooks = NSMutableArray()
         listOfApplication = NSMutableArray()
         productInventory = NSMutableArray()
-//        tableView.estimatedRowHeight = 50
-//        tableView.rowHeight = UITableViewAutomaticDimension
         
         fetchData()
     }
@@ -181,9 +179,6 @@ class MyListTableViewController: UITableViewController {
         else{
             cell.descriptionTextView.isHidden = true
         }
-
-        // Configure the cell...
-        //cell.textLabel?.text = myData![indexPath.row]
         return cell
     }
  
