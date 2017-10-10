@@ -15,7 +15,6 @@ class MyCustomTableViewCell: UITableViewCell {
     @IBOutlet weak var thumbnailImageView: UIImageView!
     @IBOutlet weak var releaseDateLabel: UILabel!
     @IBOutlet weak var priceLabel: UILabel!
-    
     @IBOutlet weak var otherImage: UIImageView!
     @IBOutlet weak var descriptionTextView: UITextView!
     var thumbnailImageURL:URL?

@@ -20,8 +20,8 @@ class MyListTableViewController: UITableViewController {
 
         productArray = NSMutableArray()
         
-        tableView.estimatedRowHeight = 50
-        tableView.rowHeight = UITableViewAutomaticDimension
+//        tableView.estimatedRowHeight = 50
+//        tableView.rowHeight = UITableViewAutomaticDimension
         
         fetchData()
     }
@@ -150,6 +150,7 @@ class MyListTableViewController: UITableViewController {
         cell.releaseDateLabel.text = product.releaseDate
         
         if let otherImageUrl = product.otherImageURL {
+            cell.otherImage.isHidden = false
             cell.otherImage.sd_setImage(with: otherImageUrl, completed: nil)
         }
         else{
@@ -158,12 +159,11 @@ class MyListTableViewController: UITableViewController {
         
         if let descriptionText = product.productDescription {
             cell.descriptionTextView.text = descriptionText
+            cell.descriptionTextView.isHidden = false
         }
         else{
             cell.descriptionTextView.isHidden = true
         }
-        
-        
 
         // Configure the cell...
         //cell.textLabel?.text = myData![indexPath.row]
