@@ -8,25 +8,22 @@
 
 import UIKit
 import Alamofire
+import SDWebImage
 
 class MyListTableViewController: UITableViewController {
 
     
-    var myData:[String]?
+    var productArray:NSMutableArray?
     
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        myData = ["Jackfruit","Mangoes", "Apples", "Chicckoo", "Bananas", "Orange"]
-        // Uncomment the following line to preserve selection between presentations
-        // self.clearsSelectionOnViewWillAppear = false
-
+        productArray = NSMutableArray()
+        
         tableView.estimatedRowHeight = tableView.rowHeight
         tableView.rowHeight = UITableViewAutomaticDimension
         
         fetchData()
-        // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-        // self.navigationItem.rightBarButtonItem = self.editButtonItem
     }
 
     override func didReceiveMemoryWarning() {
@@ -59,68 +56,78 @@ class MyListTableViewController: UITableViewController {
                     print("Could not get todo title from JSON")
                     return
                 }
-//                print(feedArray)
                 
                 for feed in feedArray{
                     
+                    var category = "", title = "", author = "", releaseDate = ""
+                    var thubnailURL:URL? = nil, otherImageURL:URL? = nil
+                    var price:Float?
+                    var description:String? = nil
                     //category parsing - Term
-                    if let category = feed["category"] as? [String:Any],
-                    let attributes = category["attributes"] as? [String:Any],
+                    if let categoryDict = feed["category"] as? [String:Any],
+                    let attributes = categoryDict["attributes"] as? [String:Any],
                         let term = attributes["term"] as? String{
-                        print("category is \(term)")
+                        category = term
                     }
                     
                     //Author name
                     if let artist = feed["artist"] as? [String:Any],
                         let label = artist["label"] as? String{
-                            print("Author is \(label)")
+                            author = label
                     }
                     
                     //Title
                     if let name = feed["name"] as? [String:Any],
                         let label = name["label"] as? String{
-                        print("Title is \(label)")
+                        title = label
                     }
                     
                     //URL
                     if let squareImage = feed["squareImage"] as? [Any],
                     let firstObject = squareImage[0] as? [String:Any],
                         let label = firstObject["label"] as? String{
-                            let thumbnailURL = URL(string: label)!
-                        print("Small image URL is \(String(describing: thumbnailURL))")
+                        thubnailURL = URL(string: label)!
                     }
                     
                     //Price
-                    if let price = feed["price"] as? [String:Any],
-                     let amount = price["amount"] as? String{
-                        print("Amount is \(amount)")
+                    if let priceDict = feed["price"] as? [String:Any],
+                     let amount = priceDict["amount"] as? Float{
+                        price = amount
                     }
                    
                     //Release date
-                    if let releaseDate = feed["releaseDate"] as? [String:Any],
-                        let label = releaseDate["label"] as? String{
-                        print("Release date is \(label)")
+                    if let releaseDateDict = feed["releaseDate"] as? [String:Any],
+                        let label = releaseDateDict["label"] as? String{
+                        releaseDate = label
                     }
                     
-//                    if let category = feed["category"] as? String,
-//                        let price = feed["price"] as? String,
-//                        let releaseDate = feed["releaseDate"] as? String,
-//                        let squareImage = feed["squareImage"] as? URL,
-//                        let artist = feed["artist"] as? String,
-//                        let title = feed["name"] as? String{
-//
-//                        let feed:Product = Product(category: category , price: price as! Float, title: title , author: artist , releaseDate: releaseDate as! String, thumbnailURL: squareImage , otherImageURL: nil, productDescription: nil)
-//
-//                        print("object created for \(feed.title)")
-//                    }
+                    //description
+                    if let summaryDict = feed["summary"] as? [String:Any],
+                        let label = summaryDict["label"] as? String{
+                        description = label
+                    }
+                    
+                    //other image url
+                    if let otherImageArray = feed["otherImage"] as? [Any],
+                        let firstObject = otherImageArray[0] as? [String:Any],
+                        let label = firstObject["label"] as? String{
+                        otherImageURL = URL(string: label)!
+                    }
+                    
+                    
+                    let product = Product(category: category, price: price!, title: title, author: author, releaseDate: releaseDate, thumbnailURL: thubnailURL!, otherImageURL: otherImageURL, productDescription: description)
+                    
+                    self.productArray?.add(product)
                 }
+                
+                self.tableView.reloadData()
         }
     }
     
     // MARK: - Table view data source
 
     @IBAction func reloadButtonPressed(_ sender: UIBarButtonItem) {
-        tableView.reloadData()
+        productArray?.removeAllObjects()
         fetchData()
     }
     override func numberOfSections(in tableView: UITableView) -> Int {
@@ -130,61 +137,28 @@ class MyListTableViewController: UITableViewController {
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // #warning Incomplete implementation, return the number of rows
-        return myData!.count
+        return (productArray?.count)!
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "customCell", for: indexPath)
+        let cell = tableView.dequeueReusableCell(withIdentifier: "customCell", for: indexPath) as! MyCustomTableViewCell
+        let product = productArray![indexPath.row] as! Product
+        cell.authorLabel.text = product.author
+        cell.titleLabel.text = product.title
+        
+        cell.thumbnailImageView.sd_setImage(with: product.thumbnailURL, completed: nil)
+        
+        
+        cell.priceLabel.text = String(format: "$%.2f", product.price)
+        cell.releaseDateLabel.text = product.releaseDate
+        
+        
+        
 
         // Configure the cell...
         //cell.textLabel?.text = myData![indexPath.row]
         return cell
     }
  
-
-    /*
-    // Override to support conditional editing of the table view.
-    override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
-        // Return false if you do not want the specified item to be editable.
-        return true
-    }
-    */
-
-    /*
-    // Override to support editing the table view.
-    override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
-        if editingStyle == .delete {
-            // Delete the row from the data source
-            tableView.deleteRows(at: [indexPath], with: .fade)
-        } else if editingStyle == .insert {
-            // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
-        }    
-    }
-    */
-
-    /*
-    // Override to support rearranging the table view.
-    override func tableView(_ tableView: UITableView, moveRowAt fromIndexPath: IndexPath, to: IndexPath) {
-
-    }
-    */
-
-    /*
-    // Override to support conditional rearranging of the table view.
-    override func tableView(_ tableView: UITableView, canMoveRowAt indexPath: IndexPath) -> Bool {
-        // Return false if you do not want the item to be re-orderable.
-        return true
-    }
-    */
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
-    }
-    */
 
 }

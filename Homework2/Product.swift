@@ -14,7 +14,7 @@ class Product: NSObject {
     var title:String
     var author:String
     var releaseDate:String
-    var thumbnailURl:URL
+    var thumbnailURL:URL
     var otherImageURL:URL?
     var productDescription:String?
     
@@ -25,7 +25,7 @@ class Product: NSObject {
         self.title = title
         self.author = author
         self.releaseDate = releaseDate
-        self.thumbnailURl = thumbnailURL
+        self.thumbnailURL = thumbnailURL
         if let url = otherImageURL {
             self.otherImageURL = url
         }

@@ -10,6 +10,15 @@ import UIKit
 
 class MyCustomTableViewCell: UITableViewCell {
 
+    @IBOutlet weak var titleLabel: UILabel!
+    @IBOutlet weak var authorLabel: UILabel!
+    @IBOutlet weak var thumbnailImageView: UIImageView!
+    @IBOutlet weak var releaseDateLabel: UILabel!
+    @IBOutlet weak var priceLabel: UILabel!
+    
+    var thumbnailImageURL:URL?
+    
+    
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
