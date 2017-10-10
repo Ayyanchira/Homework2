@@ -26,12 +26,8 @@ class Product: NSObject {
         self.author = author
         self.releaseDate = releaseDate
         self.thumbnailURL = thumbnailURL
-        if let url = otherImageURL {
-            self.otherImageURL = url
-        }
-        if let descriptionNonNull = productDescription {
-            self.productDescription = descriptionNonNull
-        }
+        self.otherImageURL = otherImageURL
+        self.productDescription = productDescription
     }
 }
 
